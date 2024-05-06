@@ -1,0 +1,84 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Npgsql;
+
+namespace WinFormsApp2
+{
+    public partial class Form3 : Form
+    {
+        public Form3(NpgsqlConnection c, int id)
+        {
+            con = c;
+            ID = id;
+            InitializeComponent();
+        }
+
+        public Form3(NpgsqlConnection c, int id, string n, string e)
+        {
+            con = c;
+            ID = id;
+            InitializeComponent();
+            textBox1.Text = n;
+            textBox2.Text = e;
+        }
+
+        public NpgsqlConnection con;
+        public int ID;
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (ID == -1)
+            {
+                try
+                {
+                    NpgsqlCommand command = new NpgsqlCommand("INSERT INTO Product(product_name, ed) VALUES(:product_name, :ed)", con);
+                    command.Parameters.AddWithValue("product_name", textBox1.Text);
+                    command.Parameters.AddWithValue("ed", textBox2.Text);
+                    command.ExecuteNonQuery();
+                    Close();
+                }
+                catch { }
+            }
+            else
+            {
+                try
+                {
+                    NpgsqlCommand command = new NpgsqlCommand("UPDATE Product SET product_name=:product_name, ed=:ed where ID=:ID)", con);
+                    command.Parameters.AddWithValue("product_name", textBox1.Text);
+                    command.Parameters.AddWithValue("ed", textBox2.Text);
+                    command.Parameters.AddWithValue("id", ID);
+                    command.ExecuteNonQuery();
+                    Close();
+                }
+                catch { };
+            }
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void Form3_Load(object sender, EventArgs e)
+        {
+           
+        }
+    }
+}
