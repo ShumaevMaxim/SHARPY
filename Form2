@@ -1,0 +1,88 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Npgsql;
+
+namespace WinFormsApp2
+{
+    public partial class Form2 : Form
+    {
+        public Form2(NpgsqlConnection c)
+        {
+            con = c;
+            InitializeComponent();
+        }
+
+        public NpgsqlConnection con;
+        DataTable dt = new DataTable();
+        DataSet ds = new DataSet();
+
+        public void Update()
+        {
+            String sql = "Select * From Product";
+            NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, con);
+            ds.Reset();
+            da.Fill(ds);
+            dt = ds.Tables[0];
+            dataGridView1.DataSource = dt;
+            dataGridView1.Columns[0].HeaderText = "Номер";
+            dataGridView1.Columns[1].HeaderText = "Наименование";
+            dataGridView1.Columns[2].HeaderText = "Ед. измерения";
+            this.StartPosition = FormStartPosition.CenterScreen;
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void добавитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form3 f = new Form3(con,-1);
+            f.ShowDialog();
+            Update();
+        }
+
+        private void изменитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int id = (int)dataGridView1.CurrentRow.Cells["ID"].Value;
+            string product_name = (string)dataGridView1.CurrentRow.Cells["product_name"].Value;
+            string ed = (string)dataGridView1.CurrentRow.Cells["ed"].Value;
+            Form3 f = new Form3(con,id,product_name, ed);
+            f.ShowDialog();
+            Update();
+        }
+
+        private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int id = (int)dataGridView1.CurrentRow.Cells["ID"].Value;
+            NpgsqlCommand command = new NpgsqlCommand("DELETE from Product where ID = :id", con);
+            command.Parameters.AddWithValue("id", id);
+            command.ExecuteNonQuery();
+            Update();
+        }
+
+        private void выходToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        
+
+        private void Form2_Load(object sender, EventArgs e)
+        {
+            Update();
+        }
+
+        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+                                                                                                                   
+        }
+    }
+}
